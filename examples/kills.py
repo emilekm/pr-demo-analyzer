@@ -1,4 +1,3 @@
-import sys
 from zlib import decompress
 
 from demo_analyzer import messages
@@ -60,7 +59,10 @@ def server_details(buffer, event):
     return None, 'print'
 
 
-start = Event(file_opener, 'new_file')
-ends = [Event(server_details, 'print')]
-runner = Runner(start, ends)
-runner(sys.argv[1])
+if __name__ == "__main__":
+    import sys
+
+    start = Event(file_opener, 'new_file')
+    ends = [Event(server_details, 'print')]
+    runner = Runner(start, ends)
+    runner(sys.argv[1])
