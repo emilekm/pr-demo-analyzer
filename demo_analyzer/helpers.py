@@ -1,58 +1,74 @@
 import struct
+from io import IOBase
+from zlib import decompress
 
 
-class DataView:
-    __slots__ = ('buffer', 'pos', 'size')
+class DataView(IOBase):
+    __slots__ = ('_buffer', '_initial_pos', '_relative_pos', '_size')
 
-    def __init__(self, buffer, pos, size):
-        self.buffer = buffer
-        self.pos = pos
-        self.size = size
+    def __init__(self, buffer, pos=0, size=-1):
+        self._buffer = buffer
+        self._initial_pos = pos
+        self._relative_pos = 0
+        if size == -1:
+            size = len(buffer) - pos
+        self._size = size
 
-    def __len__(self):
-        return self.size
+    @property
+    def _absolute_pos(self):
+        return self._initial_pos + self._relative_pos
 
-    def _get_slice(self, arg):
-        assert not arg.step, (
-            '{} does not support slicing with steps'.format(self.__class__.__name__)
-        )
+    def seek(self, pos, whence=0):
+        if whence == 0:
+            if pos < 0:
+                raise ValueError("negative seek position %r" % (pos,))
+            self._relative_pos = pos
+        elif whence == 1:
+            self._relative_pos = max(0, self._relative_pos + pos)
+        elif whence == 2:
+            self._relative_pos = max(0, self._size + pos)
+        else:
+            raise ValueError("unsupported whence value")
+        return self._relative_pos
 
-        start = arg.start
-        stop = arg.stop
+    def peek(self, size=1):
+        size = min(self._size - self._relative_pos, size)
+        return self._buffer[self._absolute_pos:self._absolute_pos + size]
 
-        pos = self.pos
-        size = self.size
+    def seekable(self):
+        return True
 
-        if stop is not None and stop < size:
-            size = stop
+    def readable(self):
+        if self._absolute_pos < self._initial_pos+self._size:
+            return True
+        return False
 
-        if start is not None:
-            pos = pos + start
-            size = size - start
+    def read(self, size=1):
+        size = min(self._size - self._relative_pos, size)
+        pos = self._absolute_pos
+        self.seek(size, 1)
+        return self._buffer[pos:pos+size]
 
-        return self.__class__(self.buffer, pos, size)
+    def getbuffer(self):
+        return self._buffer
 
-    def __getitem__(self, arg):
-        if isinstance(arg, slice):
-            return self._get_slice(arg)
+    def getvalue(self):
+        return self._buffer[self._initial_pos:self._initial_pos+self._size]
 
-        if arg >= self.size:
-            raise IndexError
-
-        return self.buffer[self.pos+arg]
+    def __bytes__(self):
+        return self.getvalue()
 
 
 class DemoView(DataView):
-    def iter_messages(self):
-        pos = 0
-        buffer_length = len(self)
+    def readmessage(self):
+        msg_size, = struct.unpack('<H', self.read(2))
+        pos = self._absolute_pos
+        self.seek(msg_size, 1)
+        return DataView(self._buffer, pos, msg_size)
 
-        while buffer_length > pos:
-            size = struct.unpack('<H', self.buffer[pos:pos+2])
-            pos = pos + 2
+    def readmessages(self):
+        while self.readable():
+            yield self.readmessage()
 
-            if pos + size > buffer_length:
-                break
-
-
-            yield pos, size
+    def __iter__(self):
+        return self.readmessages()
