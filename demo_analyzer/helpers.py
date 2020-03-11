@@ -4,8 +4,6 @@ from zlib import decompress
 
 
 class DataView(IOBase):
-    __slots__ = ('_buffer', '_initial_pos', '_relative_pos', '_size')
-
     def __init__(self, buffer, pos=0, size=-1):
         self._buffer = buffer
         self._initial_pos = pos
