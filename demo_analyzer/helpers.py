@@ -64,9 +64,9 @@ class DemoView(DataView):
         self.seek(msg_size, 1)
         return DataView(self._buffer, pos, msg_size)
 
-    def readmessages(self):
-        while self.readable():
-            yield self.readmessage()
+    def __next__(self):
+        message = self.readmessage()
+        if not message:
+            raise StopIteration
+        return message
 
-    def __iter__(self):
-        return self.readmessages()
