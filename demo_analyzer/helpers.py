@@ -70,3 +70,12 @@ class DemoView(DataView):
             raise StopIteration
         return message
 
+    def __iter__(self):
+        return self
+
+
+def open_demo(filename):
+    with open(filename, 'rb') as f:
+        buffer = decompress(f.read())
+    return DemoView(buffer)
+
