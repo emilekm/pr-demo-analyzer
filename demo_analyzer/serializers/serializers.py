@@ -47,27 +47,24 @@ class Serializer(BaseSerializer,
                  metaclass=SerializerMetaclass):
     def encode(self, data):
         ret = []
-        size = 0
         for field_name, field in self._declared_fields:
             value = field.get_attribute(data)
-            encoded, _size = field.encode(value)
+            encoded = field.encode(value)
             ret.append(encoded)
-            size += _size
 
-        return b''.join(ret), size
+        return b''.join(ret)
 
     def decode(self, buffer, pos):
         ret = {}
         for field_name, field in self._declared_fields:
-            raw_value, pos = field.decode(buffer, pos)
+            raw_value = field.decode(buffer)
             ret[field_name] = field.get_value(raw_value)
-        return ret, pos
+        return ret
 
 
 class FlagedSerializer(Serializer):
     def encode(self, data):
         ret = []
-        size = 0
         for field_name, field in self._declared_fields:
             if isinstance(field, fields.Field):
                 flags = data.get(field_name, None)
@@ -77,27 +74,26 @@ class FlagedSerializer(Serializer):
             if flags and flags.get(field_name) is False:
                 continue
 
-            value, _size = field.encode(data.get(field_name))
+            value = field.encode(data.get(field_name))
 
             ret.append(value)
-            size += _size
 
-        return b''.join(ret), size
+        return b''.join(ret)
 
-    def decode(self, buffer, pos):
+    def decode(self, buffer):
         flags = None
         ret = {}
         for field_name, field in self._declared_fields:
             if flags and getattr(flags, field.flag) is False:
                 continue
 
-            value, pos = field.decode(buffer, pos)
+            value = field.decode(buffer)
 
             if isinstance(field, fields.Field):
                 flags = value
 
             ret[field_name] = value
-        return ret, pos
+        return ret
 
 
 class ListSerializer(BaseSerializer):

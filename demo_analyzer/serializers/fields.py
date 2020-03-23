@@ -30,7 +30,7 @@ class Field:
     def get_value(self, raw_value):
         return raw_value
 
-    def decode(self, buffer, pos):
+    def decode(self, buffer):
         raise NotImplementedError
 
 
@@ -57,58 +57,82 @@ class StructField(Field):
         return struct.pack(
             self.fmt,
             value
-        ), self.size
+        )
 
-    def decode(self, buffer, pos):
-        new_pos = pos + self.size
+    def decode(self, buffer):
         return struct.unpack(
             self.fmt,
-            buffer[pos:new_pos]
-        )[0], new_pos
+            buffer.read(self.size)
+        )[0]
+
+
+BYTE = 'c'
 
 
 class ByteField(StructField):
-    fmt = 'c'
+    fmt = BYTE
+
+
+INT8 = 'b'
+UINT8 = 'B'
 
 
 class Int8Field(StructField):
-    fmt = 'b'
+    fmt = INT8
 
 
 class UInt8Field(StructField):
-    fmt = 'B'
+    fmt = UINT8
+
+
+INT16 = 'h'
+UINT16 = 'H'
 
 
 class Int16Field(StructField):
-    fmt = 'h'
+    fmt = INT16
 
 
 class UInt16Field(StructField):
-    fmt = 'H'
+    fmt = UINT16
+
+
+INT32 = 'i'
+UINT32 = 'I'
 
 
 class Int32Field(StructField):
-    fmt = 'i'
+    fmt = INT32
 
 
 class UInt32Field(StructField):
-    fmt = 'I'
+    fmt = UINT32
+
+
+INT64 = 'q'
+UINT64 = 'Q'
 
 
 class Int64Field(StructField):
-    fmt = 'q'
+    fmt = INT64
 
 
 class UInt64Field(StructField):
-    fmt = 'Q'
+    fmt = UINT64
+
+
+FLOAT = 'f'
 
 
 class FloatField(StructField):
-    fmt = 'f'
+    fmt = FLOAT
+
+
+BOOL = '?'
 
 
 class BoolField(StructField):
-    fmt = '?'
+    fmt = BOOL
 
 
 class TimestampField(StructField):
@@ -122,21 +146,20 @@ class TimestampField(StructField):
 class StringField(Field):
     @staticmethod
     def encode(value):
-        return value + '\x00', len(value) + 1
+        return value + '\x00'
 
     @staticmethod
-    def decode(buffer, pos):
-        length = len(buffer)
+    def decode(buffer):
         slist = []
 
-        while pos < length:
-            val = buffer[pos]
+        while buffer.readable():
+            val = buffer.read(1)
             pos += 1
             if val == 0:
                 break
             slist.append(chr(val))
 
-        return ''.join(slist), pos
+        return ''.join(slist)
 
 
 class FlagsField(StructField):
