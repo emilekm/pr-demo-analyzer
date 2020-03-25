@@ -16,42 +16,41 @@ class DataView(IOBase):
     def _absolute_pos(self):
         return self._initial_pos + self._relative_pos
 
+    def _check_enough_bytes(self, size):
+        if (self._relative_pos + size) > self._size:
+            raise ValueError('not enough bytes')
+
     def seek(self, pos, whence=0):
         if whence == 0:
             if pos < 0:
-                raise ValueError("negative seek position %r" % (pos,))
+                raise ValueError(f'negative seek position {pos}')
+            if pos >= self._size:
+                raise ValueError(f'seek beyond buffer size {pos}')
             self._relative_pos = pos
         elif whence == 1:
             self._relative_pos = max(0, self._relative_pos + pos)
         elif whence == 2:
             self._relative_pos = max(0, self._size + pos)
         else:
-            raise ValueError("unsupported whence value")
+            raise ValueError('unsupported whence value')
         return self._relative_pos
 
     def peek(self, size=1):
-        size = min(self._size - self._relative_pos, size)
+        self._check_enough_bytes(size)
         return self._buffer[self._absolute_pos:self._absolute_pos + size]
 
-    def seekable(self):
-        return True
-
-    def readable(self):
-        if self._absolute_pos < self._initial_pos+self._size:
-            return True
-        return False
-
     def read(self, size=1):
-        size = min(self._size - self._relative_pos, size)
-        pos = self._absolute_pos
+        ret = self.peek(size)
         self.seek(size, 1)
-        return self._buffer[pos:pos+size]
+        return ret
 
     def getbuffer(self):
         return self._buffer
 
     def getvalue(self):
-        return self._buffer[self._initial_pos:self._initial_pos+self._size]
+        self._buffer = self._buffer[self._initial_pos:self._initial_pos+self._size]
+        self._initial_pos = 0
+        return self._buffer
 
     def __bytes__(self):
         return self.getvalue()
@@ -59,10 +58,14 @@ class DataView(IOBase):
 
 class DemoView(DataView):
     def readmessage(self):
-        msg_size, = struct.unpack('<H', self.read(2))
+        try:
+            msg_size, = struct.unpack('<H', self.read(2))
+            self._check_enough_bytes(msg_size)
+        except ValueError:
+            return
         pos = self._absolute_pos
         self.seek(msg_size, 1)
-        return DataView(self._buffer, pos, msg_size)
+        return DataView(self.getbuffer(), pos, msg_size)
 
     def __next__(self):
         message = self.readmessage()

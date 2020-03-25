@@ -152,9 +152,11 @@ class StringField(Field):
     def decode(buffer):
         slist = []
 
-        while buffer.readable():
-            val = buffer.read(1)
-            pos += 1
+        while True:
+            try:
+                val = buffer.read(1)[0]
+            except ValueError:
+                break
             if val == 0:
                 break
             slist.append(chr(val))

@@ -7,7 +7,7 @@ class BaseSerializer(fields.Field):
     def __new__(cls, *args, **kwargs):
         if kwargs.pop('many', False):
             return cls.many_init(*args, **kwargs)
-        return super().__new__(cls, *args, **kwargs)
+        return super().__new__(cls)
 
     @classmethod
     def many_init(cls, *args, **kwargs):
@@ -54,7 +54,7 @@ class Serializer(BaseSerializer,
 
         return b''.join(ret)
 
-    def decode(self, buffer, pos):
+    def decode(self, buffer):
         ret = {}
         for field_name, field in self._declared_fields:
             raw_value = field.decode(buffer)
@@ -105,18 +105,15 @@ class ListSerializer(BaseSerializer):
 
     def encode(self, data):
         ret = []
-        size = 0
-
         for d in data:
-            value, _size = self.child.encode(d)
+            value = self.child.encode(d)
             ret.append(value)
-            size += _size
 
-        return b''.join(ret), size
+        return b''.join(ret)
 
-    def decode(self, buffer, pos):
+    def decode(self, buffer):
         ret = []
         while len(buffer) > pos:
-            value, pos = self.child.decode(buffer, pos)
+            value = self.child.decode(buffer)
             ret.append(value)
-        return ret, pos
+        return ret
