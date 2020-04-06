@@ -1,10 +1,6 @@
 from demo_analyzer import serializers
 
 
-class Header(serializers.Serializer):
-    length = serializers.UInt16Field()
-
-
 class Type(serializers.Serializer):
     type = serializers.ByteField()
 
@@ -31,6 +27,17 @@ class ServerDetails(serializers.Serializer):
     tickets2 = serializers.UInt16Field()
 
 
+class PlayerAdd(serializers.Serializer):
+    id = serializers.UInt8Field()
+    ign = serializers.StringField()
+    hash = serializers.StringField()
+    ip = serializers.StringField()
+
+
+class PlayerRemove(serializers.Serializer):
+    id = serializers.UInt8Field()
+
+
 class Ticks(serializers.Serializer):
     ticks = serializers.UInt8Field()
 
@@ -39,3 +46,12 @@ class Kill(serializers.Serializer):
     attacker = serializers.UInt8Field()
     victim = serializers.UInt8Field()
     weapon = serializers.StringField()
+
+
+class Revive(serializers.Serializer):
+    medic = serializers.UInt8Field()
+    patient = serializers.UInt8Field()
+
+
+class TeamTickets(serializers.Serializer):
+    tickets = serializers.UInt16Field()
