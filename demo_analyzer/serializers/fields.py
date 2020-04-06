@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import partial
 import struct
 
@@ -140,7 +140,7 @@ class TimestampField(StructField):
         return super().get_attribute(data).timestamp()
 
     def get_value(self, raw_value):
-        return datetime.fromtimestamp(raw_value)
+        return datetime.fromtimestamp(raw_value, timezone.utc)
 
 
 class StringField(Field):
