@@ -57,8 +57,11 @@ class Serializer(BaseSerializer,
     def decode(self, buffer):
         ret = {}
         for field_name, field in self._declared_fields:
-            raw_value = field.decode(buffer)
-            ret[field_name] = field.get_value(raw_value)
+            try:
+                raw_value = field.decode(buffer)
+                ret[field_name] = field.get_value(raw_value)
+            except ValueError:
+                break
         return ret
 
 
@@ -113,7 +116,9 @@ class ListSerializer(BaseSerializer):
 
     def decode(self, buffer):
         ret = []
-        while len(buffer) > pos:
+        while True:
             value = self.child.decode(buffer)
+            if not value:
+                break
             ret.append(value)
         return ret
