@@ -82,3 +82,7 @@ def open_demo(filename):
         buffer = decompress(f.read())
     return DemoView(buffer)
 
+
+def message_type(message):
+    msg_type, = struct.unpack('<c', message.read(1))
+    return msg_type
