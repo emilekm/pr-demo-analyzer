@@ -22,41 +22,41 @@ class FormatStrings(Enum):
 
 class MessageTypes(Enum):
     SERVER_DETAILS = b'\x00'
-    PLAYER_UPDATE = b'\x10',
-    PLAYER_ADD = b'\x11',
-    PLAYER_REMOVE = b'\x12',
+    PLAYER_UPDATE = b'\x10'
+    PLAYER_ADD = b'\x11'
+    PLAYER_REMOVE = b'\x12'
 
-    VEHICLE_UPDATE = b'\x20',
-    VEHICLE_ADD = b'\x21',
-    VEHICLE_DESTROYED = b'\x22',
+    VEHICLE_UPDATE = b'\x20'
+    VEHICLE_ADD = b'\x21'
+    VEHICLE_DESTROYED = b'\x22'
 
-    FOB_ADD = b'\x30',
-    FOB_REMOVE = b'\x31',
+    FOB_ADD = b'\x30'
+    FOB_REMOVE = b'\x31'
 
-    FLAG_UPDATE = b'\x40',
-    FLAG_LIST = b'\x41',
+    FLAG_UPDATE = b'\x40'
+    FLAG_LIST = b'\x41'
 
-    KILL = b'\x50',
-    CHAT = b'\x51',
+    KILL = b'\x50'
+    CHAT = b'\x51'
 
-    TICKETS_TEAM1 = b'\x52',
-    TICKETS_TEAM2 = b'\x53',
+    TICKETS_TEAM1 = b'\x52'
+    TICKETS_TEAM2 = b'\x53'
 
-    RALLY_ADD = b'\x60',
-    RALLY_REMOVE = b'\x61',
+    RALLY_ADD = b'\x60'
+    RALLY_REMOVE = b'\x61'
 
-    CACHE_ADD = b'\x70',
-    CACHE_REMOVE = b'\x71',
-    CACHE_REVEAL = b'\x72',
-    INTEL_CHANGE = b'\x73',
+    CACHE_ADD = b'\x70'
+    CACHE_REMOVE = b'\x71'
+    CACHE_REVEAL = b'\x72'
+    INTEL_CHANGE = b'\x73'
 
-    REVIVE = b'\xA0',
-    KITALLOCATED = b'\xA1',
-    SQUADNAME = b'\xA2',
-    SLORDERS = b'\xA3',
+    REVIVE = b'\xA0'
+    KITALLOCATED = b'\xA1'
+    SQUADNAME = b'\xA2'
+    SLORDERS = b'\xA3'
 
-    ROUNDEND = b'\xf0',
-    TICKS = b'\xf1',
+    ROUNDEND = b'\xf0'
+    TICKS = b'\xf1'
 
 
 class PlayerUpdateFlags(IntFlag):
