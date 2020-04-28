@@ -3,7 +3,7 @@
     See LICENSE.md for original license.
 '''
 
-from demo_analyzer.serializers.serializers import Serializer, FlagedSerializer, ListSerializer
+from .serializers import *
 from demo_analyzer.serializers.fields import (
     Field,
     StructField,
