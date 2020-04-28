@@ -33,6 +33,9 @@ class PlayerAdd(serializers.Serializer):
     hash = serializers.StringField()
     ip = serializers.StringField()
 
+    class Meta:
+        many = True
+
 
 class PlayerRemove(serializers.Serializer):
     id = serializers.UInt8Field()

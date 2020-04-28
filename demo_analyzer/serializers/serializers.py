@@ -15,7 +15,7 @@ class SkipField(Exception):
 
 class BaseSerializer(Field):
     def __new__(cls, *args, **kwargs):
-        if kwargs.pop('many', False):
+        if kwargs.pop('many', False) or getattr(cls.Meta, 'many', False):
             return cls.many_init(*args, **kwargs)
         return super().__new__(cls)
 
@@ -23,6 +23,9 @@ class BaseSerializer(Field):
     def many_init(cls, *args, **kwargs):
         kwargs['child'] = cls(*args, **kwargs)
         return ListSerializer(*args, **kwargs)
+
+    class Meta:
+        many = False
 
 
 class SerializerMetaclass(type):
