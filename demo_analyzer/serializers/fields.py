@@ -171,16 +171,16 @@ class FlagsField(StructField):
         self.flags = flags
 
     def get_attribute(self, data):
-        try:
-            flags = super().get_attribute(data)
-        except KeyError:
-            pass
-        else:
+        flags = super().get_attribute(data)
+        if flags is None:
             flags = self.generate_flags(data)
+        return flags
 
-        return sum(
-            [getattr(self.flags, name) for name, value in flags if value is True]
+    def encode(self, flags):
+        flags_int = sum(
+            (getattr(self.flags, name) for name, value in flags if value is True)
         )
+        return super().encode(flags_int)
 
     def get_value(self, raw_value):
         return {
@@ -190,7 +190,7 @@ class FlagsField(StructField):
 
     def generate_flags(self, data):
         return {
-            name: True if data[name] is not None else False
+            name: True if data.get(name, None) is not None else False
             for name in self.flags.__members__
         }
 
