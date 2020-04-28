@@ -2,6 +2,8 @@ from datetime import datetime, timezone
 from functools import partial
 import struct
 
+from demo_analyzer.constants import FormatStrings
+
 
 class Field:
     _creation_counter = 0
@@ -66,73 +68,48 @@ class StructField(Field):
         )[0]
 
 
-BYTE = 'c'
-
-
 class ByteField(StructField):
-    fmt = BYTE
-
-
-INT8 = 'b'
-UINT8 = 'B'
+    fmt = FormatStrings.BYTE
 
 
 class Int8Field(StructField):
-    fmt = INT8
+    fmt = FormatStrings.INT8
 
 
 class UInt8Field(StructField):
-    fmt = UINT8
-
-
-INT16 = 'h'
-UINT16 = 'H'
+    fmt = FormatStrings.UINT8
 
 
 class Int16Field(StructField):
-    fmt = INT16
+    fmt = FormatStrings.INT16
 
 
 class UInt16Field(StructField):
-    fmt = UINT16
-
-
-INT32 = 'i'
-UINT32 = 'I'
+    fmt = FormatStrings.UINT16
 
 
 class Int32Field(StructField):
-    fmt = INT32
+    fmt = FormatStrings.INT32
 
 
 class UInt32Field(StructField):
-    fmt = UINT32
-
-
-INT64 = 'q'
-UINT64 = 'Q'
+    fmt = FormatStrings.UINT32
 
 
 class Int64Field(StructField):
-    fmt = INT64
+    fmt = FormatStrings.INT64
 
 
 class UInt64Field(StructField):
-    fmt = UINT64
-
-
-FLOAT = 'f'
+    fmt = FormatStrings.UINT64
 
 
 class FloatField(StructField):
-    fmt = FLOAT
-
-
-BOOL = '?'
+    fmt = FormatStrings.FLOAT
 
 
 class BoolField(StructField):
-    fmt = BOOL
+    fmt = FormatStrings.BOOL
 
 
 class TimestampField(StructField):
