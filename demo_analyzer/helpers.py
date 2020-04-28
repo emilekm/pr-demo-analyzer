@@ -3,6 +3,10 @@ from io import IOBase
 from zlib import decompress
 
 
+class BufferError(Exception):
+    pass
+
+
 class DataView(IOBase):
     def __init__(self, buffer, pos=0, size=-1):
         self._buffer = buffer
@@ -18,7 +22,7 @@ class DataView(IOBase):
 
     def _check_enough_bytes(self, size):
         if (self._relative_pos + size) > self._size:
-            raise ValueError('not enough bytes')
+            raise BufferError('not enough bytes')
 
     def seek(self, pos, whence=0):
         if whence == 0:
@@ -61,7 +65,7 @@ class DemoView(DataView):
         try:
             msg_size, = struct.unpack('<H', self.read(2))
             self._check_enough_bytes(msg_size)
-        except ValueError:
+        except BufferError:
             return
         pos = self._absolute_pos
         self.seek(msg_size, 1)
