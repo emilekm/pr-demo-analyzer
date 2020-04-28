@@ -22,7 +22,7 @@ class Field:
 
 
     def get_attribute(self, data):
-        return data[self.field_name]
+        return data.get(self.field_name, None)
 
     def encode(self, value):
         raise NotImplementedError
