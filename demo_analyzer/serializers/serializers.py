@@ -1,9 +1,19 @@
-from demo_analyzer.serializers import fields
+from demo_analyzer.helpers import BufferError
+from demo_analyzer.serializers.fields import Field, FlagsField
 
-Field = fields.Field
+
+__all__ = [
+    'SkipField',
+    'Serializer',
+    'ListSerializer',
+]
 
 
-class BaseSerializer(fields.Field):
+class SkipField(Exception):
+    pass
+
+
+class BaseSerializer(Field):
     def __new__(cls, *args, **kwargs):
         if kwargs.pop('many', False):
             return cls.many_init(*args, **kwargs)
@@ -46,40 +56,19 @@ class SerializerMetaclass(type):
 class Serializer(BaseSerializer,
                  metaclass=SerializerMetaclass):
     def encode(self, data):
+        flags = None
         ret = []
         for field_name, field in self._declared_fields:
-            value = field.get_attribute(data)
-            encoded = field.encode(value)
-            ret.append(encoded)
-
-        return b''.join(ret)
-
-    def decode(self, buffer):
-        ret = {}
-        for field_name, field in self._declared_fields:
-            try:
-                raw_value = field.decode(buffer)
-                ret[field_name] = field.get_value(raw_value)
-            except ValueError:
-                break
-        return ret
-
-
-class FlagedSerializer(Serializer):
-    def encode(self, data):
-        ret = []
-        for field_name, field in self._declared_fields:
-            if isinstance(field, fields.Field):
-                flags = data.get(field_name, None)
-                if flags is None:
-                    flags = self._generate_flags(data)
-
             if flags and flags.get(field_name) is False:
                 continue
 
-            value = field.encode(data.get(field_name))
+            value = field.get_attribute(data)
 
-            ret.append(value)
+            if isinstance(field, FlagsField):
+                flags = value
+
+            encoded = field.encode(value)
+            ret.append(encoded)
 
         return b''.join(ret)
 
@@ -90,12 +79,25 @@ class FlagedSerializer(Serializer):
             if flags and getattr(flags, field.flag) is False:
                 continue
 
-            value = field.decode(buffer)
+            try:
+                raw_value = field.decode(buffer)
+            except BufferError:
+                break
 
-            if isinstance(field, fields.Field):
+            validate_method = getattr(self, f'validate_{field_name}', None)
+            if validate_method:
+                try:
+                    validate_method(raw_value, ret)
+                except SkipField:
+                    buffer.seek(-field.size, 1)
+                    continue
+
+            value = field.get_value(raw_value)
+            ret[field_name] = value
+
+            if isinstance(field, FlagsField):
                 flags = value
 
-            ret[field_name] = value
         return ret
 
 
