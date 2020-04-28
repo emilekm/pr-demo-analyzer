@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from functools import partial
 import struct
+from enum import Enum
 
 from demo_analyzer.constants import FormatStrings
 
@@ -48,6 +49,9 @@ class StructField(Field):
 
         if fmt:
             self.fmt = fmt
+
+        if isinstance(self.fmt, Enum):
+            self.fmt = self.fmt.value
 
         if self.fmt[0] not in FMT_BYTE_ORDERS:
             self.fmt = '<' + self.fmt
