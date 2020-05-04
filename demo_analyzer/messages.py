@@ -147,5 +147,17 @@ class TeamTickets(serializers.Serializer):
     tickets = serializers.UInt16Field()
 
 
+class FlagList(serializers.Serializer):
+    id = serializers.Int16Field()
+    owner = serializers.UInt8Field()
+    position = Position()
+    radius = serializers.UInt16Field()
+
+
+class FlagUpdate(serializers.Serializer):
+    id = serializers.Int16Field()
+    new_owner = serializers.UInt8Field()
+
+
 class Ticks(serializers.Serializer):
     ticks = serializers.UInt8Field()
