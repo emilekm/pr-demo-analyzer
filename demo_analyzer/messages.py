@@ -171,3 +171,25 @@ class FlagUpdate(serializers.Serializer):
 
 class Ticks(serializers.Serializer):
     ticks = serializers.UInt8Field()
+
+
+def type_to_serializer(msg_type):
+    msg_type = MessageTypes(msg_type)
+    return {
+        MessageTypes.SERVER_DETAILS: ServerDetails,
+        MessageTypes.PLAYER_ADD: PlayersAdd,
+        MessageTypes.PLAYER_UPDATE: PlayersUpdate,
+        MessageTypes.PLAYER_REMOVE: PlayerRemove,
+        MessageTypes.VEHICLE_ADD: VehiclesAdd,
+        MessageTypes.VEHICLE_UPDATE: VehiclesUpdate,
+        MessageTypes.VEHICLE_DESTROYED: VehicleDestroyed,
+        MessageTypes.FOB_ADD: FobsAdd,
+        MessageTypes.FOB_REMOVE: FobsRemove,
+        MessageTypes.KILL: Kill,
+        MessageTypes.REVIVE: Revive,
+        MessageTypes.TICKETS_TEAM1: TeamTickets,
+        MessageTypes.TICKETS_TEAM2: TeamTickets,
+        MessageTypes.FLAG_LIST: FlagList,
+        MessageTypes.FLAG_UPDATE: FlagUpdate,
+        MessageTypes.TICKS: Ticks,
+    }[msg_type]
