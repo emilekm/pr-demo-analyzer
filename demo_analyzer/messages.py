@@ -30,8 +30,9 @@ class PlayerAdd(serializers.Serializer):
     hash = serializers.StringField()
     ip = serializers.StringField()
 
-    class Meta:
-        many = True
+
+class PlayersAdd(serializers.ListSerializer):
+    child = PlayerAdd()
 
 
 class PlayerVehicle(serializers.Serializer):
@@ -78,9 +79,9 @@ class PlayerUpdate(serializers.Serializer):
     rotation = serializers.Int16Field()
     kit_name = serializers.StringField()
 
-    class Meta:
-        many = True
 
+class PlayersUpdate(serializers.ListSerializer):
+    child = PlayerUpdate()
 
 class PlayerRemove(serializers.Serializer):
     id = serializers.UInt8Field()
@@ -91,8 +92,9 @@ class VehicleAdd(serializers.Serializer):
     name = serializers.StringField()
     max_health = serializers.UInt16Field()
 
-    class Meta:
-        many = True
+    
+class VehiclesAdd(serializers.ListSerializer):
+    child = VehicleAdd()
 
 
 class VehicleUpdate(serializers.Serializer):
@@ -110,6 +112,9 @@ class VehicleUpdate(serializers.Serializer):
         many = True
 
 
+class VehiclesUpdate(serializers.ListSerializer):
+    child = VehicleUpdate()
+
 class VehicleDestroyed(serializers.Serializer):
     id = serializers.Int16Field()
     is_killer_known = serializers.BoolField()
@@ -121,8 +126,9 @@ class FobAdd(serializers.Serializer):
     team = serializers.Int8Field()
     position = Position()
 
-    class Meta:
-        many = True
+
+class FobsAdd(serializers.ListSerializer):
+    child = FobAdd()
 
 
 class FobRemove(serializers.Serializer):
@@ -130,6 +136,10 @@ class FobRemove(serializers.Serializer):
 
     class Meta:
         many = True
+
+
+class FobsRemove(serializers.ListSerializer):
+    child = FobRemove()
 
 
 class Kill(serializers.Serializer):
