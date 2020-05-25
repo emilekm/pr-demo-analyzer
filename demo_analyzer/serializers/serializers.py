@@ -13,7 +13,39 @@ class SkipField(Exception):
     pass
 
 
+class empty:
+    pass
+
+
 class BaseSerializer(Field):
+    _buffer = None
+    _data = None
+
+    def __init__(self, data=empty, buffer=empty, *args, **kwargs):
+        if data is not empty:
+            self._data = data
+        if buffer is not empty:
+            self._buffer = buffer
+    
+        kwargs.pop('many', None)
+        super().__init__(**kwargs)
+
+    @property
+    def buffer(self):
+        if not self._buffer and self._data:
+            data = self.get_attribute(self._data)
+            self._buffer = self.encode(data)
+
+        return self._buffer
+
+    @property
+    def data(self):
+        if not self._data and self._buffer:
+            decoded = self.decode(self._buffer)
+            self._data = self.get_value(decoded)
+
+        return self._data
+
     def __new__(cls, *args, **kwargs):
         if kwargs.pop('many', False) or getattr(cls.Meta, 'many', False):
             return cls.many_init(*args, **kwargs)
