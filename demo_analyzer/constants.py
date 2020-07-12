@@ -22,6 +22,9 @@ class FormatStrings(Enum):
 
 class MessageTypes(Enum):
     SERVER_DETAILS = b'\x00'
+    DOD_LIST = b'\x01'
+
+
     PLAYER_UPDATE = b'\x10'
     PLAYER_ADD = b'\x11'
     PLAYER_REMOVE = b'\x12'
