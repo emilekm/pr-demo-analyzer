@@ -71,7 +71,7 @@ class PlayerUpdateFlags(IntFlag):
     teamwork_score = 32
     kills = 64
     teamkills = 128
-    death = 256
+    deaths = 256
     ping = 512
     is_alive = 2048
     is_joining = 4096
