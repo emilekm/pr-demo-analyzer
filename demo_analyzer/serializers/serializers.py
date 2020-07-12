@@ -108,7 +108,7 @@ class Serializer(BaseSerializer,
         flags = None
         ret = {}
         for field_name, field in self._declared_fields:
-            if flags and getattr(flags, field.flag) is False:
+            if flags and flags.get(field.flag, None) is False:
                 continue
 
             try:
