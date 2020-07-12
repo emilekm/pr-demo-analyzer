@@ -3,6 +3,9 @@ from io import IOBase
 from zlib import decompress
 
 
+from demo_analyzer import constants
+
+
 class BufferError(Exception):
     pass
 
@@ -89,4 +92,4 @@ def open_demo(filename):
 
 def message_type(message):
     msg_type, = struct.unpack('<c', message.read(1))
-    return msg_type
+    return constants.MessageTypes(msg_type)
