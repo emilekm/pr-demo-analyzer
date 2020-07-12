@@ -63,6 +63,15 @@ class DataView(IOBase):
         return self.getvalue()
 
 
+class MessageView(DataView):
+    type = None
+
+    def __init__(self, buffer, pos=0, size=-1, with_type=True):
+        super().__init__(buffer, pos, size)
+        if with_type is True:
+            self.type = message_type(self)
+
+
 class DemoView(DataView):
     def readmessage(self):
         try:
@@ -72,7 +81,7 @@ class DemoView(DataView):
             return
         pos = self._absolute_pos
         self.seek(msg_size, 1)
-        return DataView(self.getbuffer(), pos, msg_size)
+        return MessageView(self.getbuffer(), pos, msg_size)
 
     def __next__(self):
         message = self.readmessage()
