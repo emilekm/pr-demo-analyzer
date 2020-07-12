@@ -1,5 +1,5 @@
 from demo_analyzer.helpers import BufferError
-from demo_analyzer.serializers.fields import Field, FlagsField
+from demo_analyzer.serializers.fields import Field, FlagsField, StringField
 
 
 __all__ = [
@@ -124,7 +124,11 @@ class Serializer(BaseSerializer,
                 try:
                     validate_method(raw_value, ret)
                 except SkipField:
-                    buffer.seek(-field.size, 1)
+                    if isinstance(field, StringField):
+                        buffer.seek(-(len(raw_value) + 1), 1)
+                    else:
+                        buffer.seek(-field.size, 1)
+
                     continue
 
             value = field.get_value(raw_value)
