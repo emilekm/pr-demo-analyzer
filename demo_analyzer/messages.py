@@ -154,7 +154,7 @@ class Revive(serializers.Serializer):
 
 
 class TeamTickets(serializers.Serializer):
-    tickets = serializers.UInt16Field()
+    tickets = serializers.Int16Field()
 
 
 class FlagList(serializers.Serializer):
