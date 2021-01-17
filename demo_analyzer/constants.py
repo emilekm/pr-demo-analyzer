@@ -53,6 +53,10 @@ class MessageTypes(Enum):
     CACHE_REVEAL = b'\x72'
     INTEL_CHANGE = b'\x73'
 
+    PROJ_UPDATE =  b'\x90'
+    PROJ_ADD = b'\x91'
+    PROJ_REMOVE = b'\x92'
+
     REVIVE = b'\xA0'
     KITALLOCATED = b'\xA1'
     SQUADNAME = b'\xA2'
@@ -60,6 +64,9 @@ class MessageTypes(Enum):
 
     ROUNDEND = b'\xf0'
     TICKS = b'\xf1'
+
+    PRIVATEMESSAGE = b'\xfd'
+    ERRORMESSAGE: b'\xfe'
 
 
 class PlayerUpdateFlags(IntFlag):
